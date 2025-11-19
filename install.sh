@@ -16,14 +16,6 @@ readonly REPO_URL="https://github.com/PrzemyslawSagalo/dotfiles.git"
 readonly REPO_BRANCH="main"
 readonly CLONE_DIR="${HOME}/.dotfiles"
 
-# --- Dependency Check ---
-# This check is cross-platform (RHEL, Ubuntu, Amazon Linux)
-if ! command -v git &> /dev/null; then
-    echo "Error: 'git' is not installed. Please install it to continue." >&2
-    echo "       (Looked in: $PATH)" >&2
-    exit 1
-fi
-
 # --- Installation / Update ---
 if [ -d "$CLONE_DIR" ]; then
     echo "-> Found existing dotfiles directory in ${CLONE_DIR}."
