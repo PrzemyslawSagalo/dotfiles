@@ -11,6 +11,8 @@ alias tnwc='tmux new-window -c $(pwd)'
 
 # Python
 alias pal='source venv/bin/activate'
+## Tests
+alias ptcr='coverage report -m'
 
 # Shell
 alias se='set -a && source .env && set +a'
