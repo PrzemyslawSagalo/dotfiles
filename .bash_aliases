@@ -1,3 +1,6 @@
+# dotfiles
+alias du='curl -sSL https://raw.githubusercontent.com/PrzemyslawSagalo/dotfiles/main/install.sh | sh'
+
 # Git
 alias gs='git status'
 alias gcb='git branch --show-current'
