@@ -13,7 +13,7 @@ alias gl='git log'
 alias tnwc='tmux new-window -c $(pwd)'
 
 # Python
-alias pal='source venv/bin/activate'
+alias pae='source venv/bin/activate'
 alias pce='python -m venv venv'
 ## Tests
 alias ptcr='coverage report -m'
