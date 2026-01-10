@@ -20,3 +20,6 @@ alias ptcr='coverage report -m'
 
 # Shell
 alias se='set -a && source .env && set +a'
+
+# NeoVim
+alias nv='nvim .'
