@@ -16,7 +16,7 @@ alias tnwc='tmux new-window -c $(pwd)'
 # Python
 alias pae='source venv/bin/activate'
 alias pce='python -m venv venv'
-alias putb
+alias putb='pip install "python-toolbox-przemek[lint,tests]"'
 ## Tests
 alias ptcr='coverage report -m'
 
