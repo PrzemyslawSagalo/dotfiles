@@ -25,3 +25,6 @@ alias se='set -a && source .env && set +a'
 
 # NeoVim
 alias nv='nvim .'
+
+# GitHub Copilot
+export COPILOT_HOME="$HOME/.config/copilot"
