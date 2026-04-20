@@ -1,5 +1,5 @@
 # dotfiles
-alias du='curl -sSL https://raw.githubusercontent.com/PrzemyslawSagalo/dotfiles/main/install.sh | sh'
+alias ddu='curl -sSL https://raw.githubusercontent.com/PrzemyslawSagalo/dotfiles/main/install.sh | sh'
 
 # Git
 alias gs='git status'
