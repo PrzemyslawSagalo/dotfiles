@@ -27,8 +27,6 @@ alias se='set -a && source .env && set +a'
 alias nv='nvim .'
 
 # GitHub Copilot
-export COPILOT_HOME="$HOME/.config/copilot"
-
 copilot() {
     command copilot \
         --allow-tool="shell(ls)" \

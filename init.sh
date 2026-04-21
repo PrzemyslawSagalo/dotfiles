@@ -21,24 +21,30 @@ if [ -d "$COPILOT_CONFIG_DIR" ]; then
     cp -R "$COPILOT_CONFIG_DIR/"* "$COPILOT_DEST_DIR/"
 fi
 
-# --- 3. Add sourcing logic to .bashrc ---
+# --- 3. Add sourcing logic and environment variables to .bashrc ---
 # This is the line we want to add
 ALIAS_LINE="if [ -f $ALIAS_DEST_FILE ]; then . $ALIAS_DEST_FILE; fi"
+COPILOT_HOME_LINE="export COPILOT_HOME=\"\$HOME/.config/copilot\""
 
-# Check if that *exact* line already exists in .bashrc
-# -F = Treat as fixed string (not regex)
-# -x = Match the whole line
-# -q = Quiet (no output)
+# Check if alias sourcing already exists
 if ! grep -Fxq "$ALIAS_LINE" "$BASHRC"; then
     echo "Adding alias sourcing logic to $BASHRC..."
-    # Add a newline, a comment, and the sourcing line
     echo -e "\n# Source custom aliases" >> "$BASHRC"
     echo "$ALIAS_LINE" >> "$BASHRC"
 else
     echo "Sourcing logic already in $BASHRC."
 fi
 
-# --- 3. Apply changes ---
+# Check if COPILOT_HOME already exists
+if ! grep -Fxq "$COPILOT_HOME_LINE" "$BASHRC"; then
+    echo "Adding COPILOT_HOME to $BASHRC..."
+    echo -e "\n# GitHub Copilot configuration" >> "$BASHRC"
+    echo "$COPILOT_HOME_LINE" >> "$BASHRC"
+else
+    echo "COPILOT_HOME already set in $BASHRC."
+fi
+
+# --- 4. Apply changes ---
 echo "Reloading shell..."
 source "$BASHRC"
 echo "Done."
