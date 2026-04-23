@@ -19,6 +19,7 @@
 ### Python
 * When generating Python tests, exclusively use `pytest` and `assertpy`.
 * Data Verification: When populating and testing data (e.g., a pandas DataFrame) to evaluate features, deeply compare the results against populated real data or use `snapshot.check()`. Do not solely rely on shallow checks like asserting data shapes.
+* If some data is generated in a test method they cannot be used in a different test method. 
 
 ## GIT
 * Make git commits use conventional commit messages and use skill conventional-commits to generate them.
