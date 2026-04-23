@@ -10,3 +10,6 @@ Architectural drivers
 curl -sSL https://raw.githubusercontent.com/PrzemyslawSagalo/dotfiles/main/install.sh | sh
 ```
 
+## GitHub Copilot
+
+* Some of the configurations were taken from https://github.com/SkillPanel/maister
