@@ -1,9 +1,0 @@
-{
-  "theme": "auto",
-  "autoUpdate": true,
-  "stream": true,
-  "renderMarkdown": true,
-  "logLevel": "default",
-  "mouse": true,
-  "experimental": false
-}
