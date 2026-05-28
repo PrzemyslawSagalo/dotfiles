@@ -42,11 +42,12 @@ After completing Phase 1, you MUST:
 
 ## Phase 3: Interactive Review Protocol
 Only after the user explicitly types "PROCEED":
-1. **Executive Decision Loop:** Present the #1 priority gap from the failing modules. Show the exact Python code block that was missed and explain the architectural risk.
-2. **Options:** 
+1. **Progress Tracking:** At the start of each iteration, display a progress bar or counter (e.g., `Review Progress: [■■■■□□□□□□] 4/10 cases`) to show how many gaps have been reviewed versus the total number of modules requiring triage.
+2. **Executive Decision Loop:** Present the #1 priority gap from the failing modules. Show the exact Python code block that was missed and explain the architectural risk.
+3. **Options:** 
    * `[Backlog]`: Update the `.rst` table's Lead Decision to `[BACKLOG]`.
    * `[Accept Risk]`: Update the `.rst` Lead Decision to `[RISK ACCEPTED]` **AND** change the Risk Level for that row to `Low`.
-3. **Iteration:** Automatically present the next priority until the triage queue is clear.
+4. **Iteration:** Automatically present the next priority until the triage queue is clear.
 
 ## Output Format (reStructuredText)
 Output `doc/test_coverage_audit.rst` strictly as follows. It must map the standard `coverage.py` layout.
