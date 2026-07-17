@@ -33,7 +33,7 @@ Automatically generate test suite for a specified target `{target_path}`.
 
 ### Phase 4: Validation and Persistence
 * **Dry Run:** Execute a static check or dry-run of the generated tests to verify syntax, standard compliance, and correct importing of reusable values.
-* **Delegate Saving:** Pass the finalized test code payload to the `docs-operator` or standard file-writing agent to persist the files in the corresponding `tests/` directory structure.
+* **Delegate Saving:** Pass the finalized test code payload to a standard file-writing agent to persist the files in the corresponding `tests/` directory structure.
 
 ## Constraints & Rules
 * **Never Duplicate:** If a fixture, mock, or constant exists elsewhere in the test suite that serves the requirement, you MUST reuse it. Do not bloat the system.

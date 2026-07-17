@@ -1,5 +1,5 @@
 ---
-name: docs-manager
+name: artifact-generator
 description: Generates, enforces, and maintains the rules of engagement within `./agents-standards`. 
 ---
 # Skill: Agent Standards Docs Manager
@@ -27,11 +27,11 @@ Draft concise, actionable rules designed for machine consumption. Ensure the gen
 
 ### Phase 3: Validation & Saving
 * Cross-reference newly generated standards with existing files to prevent rule conflicts.
-* **Delegation:** ALL file write operations MUST be executed via the `docs-operator` subagent. The docs-manager does not write files directly.
+* **Delegation:** ALL file write operations MUST be executed by the `artifact-generator` skill itself. Generate and save the documentation files directly.
 * Generate ./agents-standards/index.yml to provide a structured overview of all standards and their relationships.
 
 ## Constraints & Rules
 * **No Fluff:** Standards must be brief, binary, and impossible for an agent to misinterpret.
 * **Immutable Core:** Never overwrite existing standards without explicit validation of the structural change.
-* **Delegation Only:** Always use the `docs-operator` for saving to `./agents-standards/`.
+* **No Delegation Needed:** The artifact-generator is responsible for directly generating and saving to `./agents-standards/`.
 

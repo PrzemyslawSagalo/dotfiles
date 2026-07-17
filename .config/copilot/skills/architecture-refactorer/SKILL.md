@@ -35,7 +35,7 @@ The skill delegates specific analysis, coverage, and documentation tasks to spec
 
 * **Planning Execution:** Formulate a step-by-step refactoring plan derived from `analysis/architecture-smells.md`. The plan must strictly preserve external system behavior.
 * **Coverage Mitigation:** Delegate to the `test-generator` module to plan coverage for any gaps identified in Phase 1 before structural changes begin. Force the use of `pytest` and `assertpy`.
-* **Documentation Delegation:** Delegate to the `docs-manager` module to draft necessary Architecture Decision Records (ADRs) or update existing architecture documentation to reflect the planned state.
+* **Documentation Delegation:** Delegate to the `artifact-generator` module to draft necessary Architecture Decision Records (ADRs) or update existing architecture documentation to reflect the planned state.
 * **Outputs:** 
   * Output the refactoring plan to `implementation/implementation-plan.md`.
 

@@ -31,8 +31,8 @@ Before executing, verify you have:
    * Is this uncovered block a critical boundary or error handling for a core API? (High/Critical Risk).
    * Or is it an internal DTO or deprecated boilerplate? (Low Risk).
 6. **File Output & Sphinx Integration:** 
-   * Create/overwrite `doc/test_coverage_audit.rst`.
-   * **Smart Sphinx Check:** Recursively scan the `doc/` directory. If `test_coverage_audit` is not listed in any `toctree`, append it to `doc/index.rst`.
+   * **Delegation:** Delegate to the `artifact-generator` skill to create/overwrite `doc/test_coverage_audit.rst`.
+   * The `artifact-generator` should also handle the Smart Sphinx Check: Recursively scan the `doc/` directory. If `test_coverage_audit` is not listed in any `toctree`, append it to `doc/index.rst`.
 
 ## Phase 2: The "On Hold" State
 After completing Phase 1, you MUST:

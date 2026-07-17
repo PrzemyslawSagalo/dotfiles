@@ -1,7 +1,7 @@
 ---
 name: test-standards-extractor
 description: Scans the `tests` directory to abstract existing testing patterns, mocking strategies, and assertion styles into hard rules. 
-             Delegates the documentation and persistence of these standards entirely to the `docs-manager`.
+             Delegates the documentation and persistence of these standards entirely to the `artifact-generator`.
 ---
 
 # Skill: Test Standards Extractor
@@ -28,8 +28,8 @@ To execute a deep scan of the existing test suites, identify the functional engi
 
 ### Phase 3: Handoff to Docs-Manager
 * Package the abstracted rules into a structured payload.
-* Invoke the `docs-manager` skill to format, validate, and write the rules into `./agents-standards/testing-standards.md`.
-* **Crucial:** Guard your boundaries. Do not perform any direct file system writes. Pass the payload and let the `docs-manager` do its job.
+* Invoke the `artifact-generator` skill to format, validate, and write the rules into `./agents-standards/testing-standards.md`.
+* **Crucial:** Guard your boundaries. Do not perform any direct file system writes. Pass the payload and let the `artifact-generator` do its job.
 
 ### Phase 4: General rules of testing 
 * Whenerver it is only possible compare raw data not only parameters like dimension, shape, type, etc. but also the actual values of the data.
@@ -37,5 +37,5 @@ To execute a deep scan of the existing test suites, identify the functional engi
 ## Constraints & Rules
 * **Truth Over Theory:** Abstract only the patterns that actually exist in the codebase. Do not invent aspirational rules. Deliver the bitter truth about the current state of the tests.
 * **Binary Directives:** Extracted rules must be concise, specific, and actionable for the next developer or agent. 
-* **Stay in Your Lane:** The sole responsibility of this skill is analysis and abstraction. Persistence is strictly owned by the `docs-manager`.
+* **Stay in Your Lane:** The sole responsibility of this skill is analysis and abstraction. Persistence is strictly owned by the `artifact-generator`.
 
