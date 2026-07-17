@@ -17,7 +17,7 @@ Automatically generate test suite for a specified target `{target_path}`.
 ## Orchestration & Execution
 
 ### Phase 1: Context & Standards Retrieval
-* **Read the Rules:** Retrieve the current testing protocols from `./agents-standards/index.yml`.
+* **Read the Rules:** Retrieve the current testing protocols from `./standards/index.yml`.
 * **Analyze the Target:** Deep dive into the `target_path` (file or directory) to understand the business logic, dependencies, and critical execution paths.
 * **Identify the "One Thing":** Determine the core functionality of the target that absolutely must not break, and prioritize testing around it.
 

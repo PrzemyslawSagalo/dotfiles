@@ -21,6 +21,7 @@ The skill delegates specific analysis, coverage, and documentation tasks to spec
 > **CLI Action:** Output to the terminal that Phase 1 (Architectural Analysis) has initiated.
 
 * **Analysis Delegation:** Delegate execution to the `project-analyzer` module to detect and map current architectural debt across the target domain.
+* **Standards Validation:** Read the global standards from `~/.config/copilot/standards/` and the local project standards from `./standards/` (if they exist). Validate the target architecture against them (especially regarding 12-factor infrastructure isolation and `.env` secret management). Local standards override global ones.
 * **Safety Net Assessment:** Delegate to `test-standards-discovery` and `test-coverage-auditor-py` to evaluate the test coverage of the targeted components. Refactoring without a verifiable safety net is strictly prohibited.
 * **Outputs:**
   * The `project-analyzer` must output its findings directly to `analysis/architecture-smells.md`.

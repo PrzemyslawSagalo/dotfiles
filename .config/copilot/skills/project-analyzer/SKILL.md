@@ -24,13 +24,14 @@ Analyze codebases to understand their current state, detect technology stack, ar
 
 ### Phase 3: Conventions Discovery
 * **Analyze Conventions:** Discover existing naming conventions (files, code, tests), code organization (imports, file co-location), documentation practices (README quality, API documentation, code comments), and code style rules (indentation, linters, quote style).
+* **Verify Standards Compliance:** Read the global standards from `~/.config/copilot/standards/` and the local standards from `./standards/` (if they exist). Verify if the project is currently complying with its infrastructure and secret-management rules. Flag any violations. Local standards override global ones.
 
 ### Phase 4: Validation & Saving
 * **Compile Report:** Aggregate all findings into a structured report containing an Executive Summary, Detailed Findings, Current State Assessment, and Documentation Recommendations (Required, Suggested, Optional). Provide an Evidence Summary.
-* **Delegation:** ALL documentation file write operations MUST be executed via the `artifact-generator` skill. The project analyzer does not write documentation files directly. Pass the finalized analysis report (JSON + Markdown) to the `artifact-generator` to persist the documentation in the corresponding `./agents-standards/` or `./docs/` directory structure.
+* **Delegation:** ALL documentation file write operations MUST be executed via the `artifact-generator` skill. The project analyzer does not write documentation files directly. Pass the finalized analysis report (JSON + Markdown) to the `artifact-generator` to persist the documentation in the corresponding `./standards/` or `./docs/` directory structure.
 
 ## Constraints & Rules
 * **Evidence-Based Analysis:** Every finding must reference actual files or code patterns discovered. Quote configuration values and provide file paths. Never make assumptions without evidence.
 * **Honest Confidence Levels:** Use High, Medium, or Low honestly. When information is missing, mark confidence as "Low", document what you looked for, and suggest asking the user rather than guessing.
-* **Delegation Only:** Always use the `artifact-generator` for generating and saving to `./agents-standards/` or project documentation directories. Do NOT modify, create, or delete any project files directly.
+* **Delegation Only:** Always use the `artifact-generator` for generating and saving to `./standards/` or project documentation directories. Do NOT modify, create, or delete any project files directly.
 * **Efficiency for Large Codebases:** Sample representative files (10-20) rather than reading everything. Focus on key directories and config files first. Use Glob for file discovery and Grep for pattern matching.

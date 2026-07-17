@@ -28,7 +28,7 @@ To execute a deep scan of the existing test suites, identify the functional engi
 
 ### Phase 3: Handoff to Docs-Manager
 * Package the abstracted rules into a structured payload.
-* Invoke the `artifact-generator` skill to format, validate, and write the rules into `./agents-standards/testing-standards.md`.
+* Invoke the `artifact-generator` skill to format, validate, and write the rules into `./standards/testing-standards.md`.
 * **Crucial:** Guard your boundaries. Do not perform any direct file system writes. Pass the payload and let the `artifact-generator` do its job.
 
 ### Phase 4: General rules of testing 
