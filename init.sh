@@ -8,7 +8,7 @@ ALIAS_DEST_FILE="$HOME/.bash_aliases"
 BASHRC="$HOME/.bashrc"
 COPILOT_CONFIG_DIR=".config/copilot"
 COPILOT_DEST_DIR="$HOME/.config/copilot"
-GEMINI_CLI_SKILLS_DIR="$HOME/.gemini/gemini-cli/skills"
+
 ANTIGRAVITY_CLI_SKILLS_DIR="$HOME/.gemini/antigravity-cli/skills"
 
 function sync_maister_plugins() {
@@ -47,9 +47,6 @@ if [ -d "$COPILOT_CONFIG_DIR" ]; then
     cp -R "$COPILOT_CONFIG_DIR/"* "$COPILOT_DEST_DIR/"
 
     if [ -d "$COPILOT_CONFIG_DIR/skills" ]; then
-        echo "Copying skills to Gemini CLI ($GEMINI_CLI_SKILLS_DIR)..."
-        mkdir -p "$GEMINI_CLI_SKILLS_DIR"
-        cp -R "$COPILOT_CONFIG_DIR/skills/"* "$GEMINI_CLI_SKILLS_DIR/"
 
         echo "Copying skills to Antigravity CLI ($ANTIGRAVITY_CLI_SKILLS_DIR)..."
         mkdir -p "$ANTIGRAVITY_CLI_SKILLS_DIR"
