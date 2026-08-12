@@ -7,7 +7,7 @@ BASHRC="$HOME/.bashrc"
 ALIAS_TARGET="$HOME/.bash_aliases"
 COPILOT_TARGET="$HOME/.config/copilot"
 AGY_CONFIG_DIR="$HOME/.gemini/config"
-MAISTER_REPO_DIR="$HOME/.local/share/maister_repo"
+MAISTER_REPO_DIR="$HOME/.config/maister_repo"
 
 link_dotfile() {
     local source_file="$1"
