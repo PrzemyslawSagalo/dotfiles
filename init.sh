@@ -1,86 +1,92 @@
 #!/bin/bash
-# Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Define key files
-ALIAS_SOURCE_FILE=".bash_aliases"
-ALIAS_DEST_FILE="$HOME/.bash_aliases"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 BASHRC="$HOME/.bashrc"
-COPILOT_CONFIG_DIR=".config/copilot"
-COPILOT_DEST_DIR="$HOME/.config/copilot"
+ALIAS_TARGET="$HOME/.bash_aliases"
+COPILOT_TARGET="$HOME/.config/copilot"
+AGY_CONFIG_DIR="$HOME/.gemini/config"
 
-ANTIGRAVITY_CLI_SKILLS_DIR="$HOME/.gemini/antigravity-cli/skills"
-
-function sync_maister_plugins() {
-    echo "Dynamically syncing maister repository..."
-    local TEMP_DIR=$(mktemp -d)
+link_dotfile() {
+    local source_file="$1"
+    local target_file="$2"
     
-    # Clone shallow copy of the repository
-    git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
-
-    # Define plugin destination paths
-    local AGY_PLUGIN_DIR="$HOME/.gemini/antigravity-cli/plugins/maister"
-    local COPILOT_PLUGIN_DIR="$HOME/.config/copilot/plugins/maister-copilot"
-
-    # Create destination directories if they don't exist
-    mkdir -p "$AGY_PLUGIN_DIR"
-    mkdir -p "$COPILOT_PLUGIN_DIR"
-
-    # Copy files (overwriting existing ones to update them)
-    cp -R "$TEMP_DIR/plugins/maister/"* "$AGY_PLUGIN_DIR/"
-    cp -R "$TEMP_DIR/plugins/maister-copilot/"* "$COPILOT_PLUGIN_DIR/"
-
-    # Clean up
-    rm -rf "$TEMP_DIR"
-    echo "Maister plugins synced successfully."
+    mkdir -p "$(dirname "$target_file")"
+    echo "Symlinking $source_file -> $target_file..."
+    ln -sfn "$source_file" "$target_file"
 }
 
-# --- 1. Copy the file ---
-# Assumes you are in the same directory as the source .bash_aliases
-echo "Copying $ALIAS_SOURCE_FILE to $ALIAS_DEST_FILE..."
-cp "$ALIAS_SOURCE_FILE" "$ALIAS_DEST_FILE"
-
-# --- 2. Copy configurations ---
-if [ -d "$COPILOT_CONFIG_DIR" ]; then
-    echo "Copying $COPILOT_CONFIG_DIR to $COPILOT_DEST_DIR..."
-    mkdir -p "$COPILOT_DEST_DIR"
-    cp -R "$COPILOT_CONFIG_DIR/"* "$COPILOT_DEST_DIR/"
-
-    if [ -d "$COPILOT_CONFIG_DIR/skills" ]; then
-
-        echo "Copying skills to Antigravity CLI ($ANTIGRAVITY_CLI_SKILLS_DIR)..."
-        mkdir -p "$ANTIGRAVITY_CLI_SKILLS_DIR"
-        cp -R "$COPILOT_CONFIG_DIR/skills/"* "$ANTIGRAVITY_CLI_SKILLS_DIR/"
+ensure_in_bashrc() {
+    local line="$1"
+    local comment="$2"
+    
+    if ! grep -Fxq "$line" "$BASHRC"; then
+        echo "Adding $comment to $BASHRC..."
+        echo -e "\n# $comment\n$line" >> "$BASHRC"
+    else
+        echo "Already present in $BASHRC: $comment"
     fi
-fi
+}
 
-# --- 3. Add sourcing logic and environment variables to .bashrc ---
-# This is the line we want to add
-ALIAS_LINE="if [ -f $ALIAS_DEST_FILE ]; then . $ALIAS_DEST_FILE; fi"
-COPILOT_HOME_LINE="export COPILOT_HOME=\"\$HOME/.config/copilot\""
+setup_bash() {
+    echo "--- Setting up Bash ---"
+    link_dotfile "$DOTFILES_DIR/.bash_aliases" "$ALIAS_TARGET"
+    ensure_in_bashrc "if [ -f $ALIAS_TARGET ]; then . $ALIAS_TARGET; fi" "Source custom aliases"
+}
 
-# Check if alias sourcing already exists
-if ! grep -Fxq "$ALIAS_LINE" "$BASHRC"; then
-    echo "Adding alias sourcing logic to $BASHRC..."
-    echo -e "\n# Source custom aliases" >> "$BASHRC"
-    echo "$ALIAS_LINE" >> "$BASHRC"
-else
-    echo "Sourcing logic already in $BASHRC."
-fi
+setup_copilot() {
+    echo "--- Setting up GitHub Copilot CLI ---"
+    link_dotfile "$DOTFILES_DIR/.config/copilot" "$COPILOT_TARGET"
+    
+    ensure_in_bashrc "export COPILOT_HOME=\"\$HOME/.config/copilot\"" "GitHub Copilot configuration"
+    
+    echo "Dynamically syncing maister repository for Copilot..."
+    local TEMP_DIR=$(mktemp -d)
+    trap 'rm -rf "$TEMP_DIR"' EXIT
+    git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
+    
+    local COPILOT_PLUGIN_DIR="$COPILOT_TARGET/plugins/maister-copilot"
+    mkdir -p "$COPILOT_PLUGIN_DIR"
+    cp -R "$TEMP_DIR/plugins/maister-copilot/"* "$COPILOT_PLUGIN_DIR/"
+    
+    trap - EXIT
+    rm -rf "$TEMP_DIR"
+    echo "Copilot setup complete."
+}
 
-# Check if COPILOT_HOME already exists
-if ! grep -Fxq "$COPILOT_HOME_LINE" "$BASHRC"; then
-    echo "Adding COPILOT_HOME to $BASHRC..."
-    echo -e "\n# GitHub Copilot configuration" >> "$BASHRC"
-    echo "$COPILOT_HOME_LINE" >> "$BASHRC"
-else
-    echo "COPILOT_HOME already set in $BASHRC."
-fi
+setup_antigravity() {
+    echo "--- Setting up Antigravity CLI ---"
+    link_dotfile "$DOTFILES_DIR/.config/copilot/skills" "$AGY_CONFIG_DIR/skills"
+    link_dotfile "$DOTFILES_DIR/.config/copilot/standards" "$AGY_CONFIG_DIR/standards"
+    
+    echo "Dynamically syncing maister repository for Antigravity..."
+    local TEMP_DIR=$(mktemp -d)
+    trap 'rm -rf "$TEMP_DIR"' EXIT
+    git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
+    
+    local AGY_PLUGIN_DIR="$AGY_CONFIG_DIR/plugins/maister"
+    mkdir -p "$AGY_PLUGIN_DIR"
+    cp -R "$TEMP_DIR/plugins/maister/"* "$AGY_PLUGIN_DIR/"
+    
+    if [ ! -f "$AGY_PLUGIN_DIR/plugin.json" ]; then
+        echo '{"name": "maister"}' > "$AGY_PLUGIN_DIR/plugin.json"
+    fi
+    
+    trap - EXIT
+    rm -rf "$TEMP_DIR"
+    echo "Antigravity setup complete."
+}
 
-# --- 4. Sync dynamic plugins ---
-sync_maister_plugins
+main() {
+    echo "Initializing dotfiles..."
 
-# --- 5. Apply changes ---
-echo "Reloading shell..."
-source "$BASHRC"
-echo "Done."
+    setup_bash
+    setup_copilot
+    setup_antigravity
+
+    echo -e "\nDone! Please run the following command to apply changes to your current terminal:"
+    echo "  source ~/.bashrc"
+}
+
+main
