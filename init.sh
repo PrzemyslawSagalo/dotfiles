@@ -50,8 +50,10 @@ setup_copilot() {
     mkdir -p "$COPILOT_PLUGIN_DIR"
     cp -R "$TEMP_DIR/plugins/maister-copilot/"* "$COPILOT_PLUGIN_DIR/"
     
-    if [ ! -f "$COPILOT_PLUGIN_DIR/plugin.json" ]; then
-        echo '{"name": "maister-copilot"}' > "$COPILOT_PLUGIN_DIR/plugin.json"
+    # Generate required manifest for Copilot (requires .claude-plugin directory)
+    if [ ! -d "$COPILOT_PLUGIN_DIR/.claude-plugin" ]; then
+        mkdir -p "$COPILOT_PLUGIN_DIR/.claude-plugin"
+        echo '{"name": "maister-copilot"}' > "$COPILOT_PLUGIN_DIR/.claude-plugin/plugin.json"
     fi
     
     trap - EXIT
