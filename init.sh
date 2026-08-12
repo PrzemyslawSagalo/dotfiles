@@ -50,6 +50,10 @@ setup_copilot() {
     mkdir -p "$COPILOT_PLUGIN_DIR"
     cp -R "$TEMP_DIR/plugins/maister-copilot/"* "$COPILOT_PLUGIN_DIR/"
     
+    if [ ! -f "$COPILOT_PLUGIN_DIR/plugin.json" ]; then
+        echo '{"name": "maister-copilot"}' > "$COPILOT_PLUGIN_DIR/plugin.json"
+    fi
+    
     trap - EXIT
     rm -rf "$TEMP_DIR"
     echo "Copilot setup complete."
