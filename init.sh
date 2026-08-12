@@ -37,23 +37,46 @@ setup_bash() {
 
 setup_copilot() {
     echo "--- Setting up GitHub Copilot CLI ---"
-    link_dotfile "$DOTFILES_DIR/.config/copilot" "$COPILOT_TARGET"
     
+    # 1. Create real directories to prevent modifying the git repository when we copy dynamic files
+    mkdir -p "$COPILOT_TARGET/skills" "$COPILOT_TARGET/agents" "$COPILOT_TARGET/commands" "$COPILOT_TARGET/standards"
+    
+    # 2. Symlink tracked files from dotfiles individually
+    [ -f "$DOTFILES_DIR/.config/copilot/copilot-instructions.md" ] && link_dotfile "$DOTFILES_DIR/.config/copilot/copilot-instructions.md" "$COPILOT_TARGET/copilot-instructions.md"
+    [ -f "$DOTFILES_DIR/.config/copilot/mcp-config.json" ] && link_dotfile "$DOTFILES_DIR/.config/copilot/mcp-config.json" "$COPILOT_TARGET/mcp-config.json"
+    
+    if [ -d "$DOTFILES_DIR/.config/copilot/skills" ]; then
+        for skill in "$DOTFILES_DIR/.config/copilot/skills/"*; do
+            [ -e "$skill" ] || continue
+            link_dotfile "$skill" "$COPILOT_TARGET/skills/$(basename "$skill")"
+        done
+    fi
+
+    if [ -d "$DOTFILES_DIR/.config/copilot/standards" ]; then
+        for std in "$DOTFILES_DIR/.config/copilot/standards/"*; do
+            [ -e "$std" ] || continue
+            link_dotfile "$std" "$COPILOT_TARGET/standards/$(basename "$std")"
+        done
+    fi
+    
+    # 3. Add environment variable to .bashrc
     ensure_in_bashrc "export COPILOT_HOME=\"\$HOME/.config/copilot\"" "GitHub Copilot configuration"
     
+    # 4. Sync external maister-copilot files dynamically
     echo "Dynamically syncing maister repository for Copilot..."
     local TEMP_DIR=$(mktemp -d)
     trap 'rm -rf "$TEMP_DIR"' EXIT
     git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
     
-    local COPILOT_PLUGIN_DIR="$COPILOT_TARGET/plugins/maister-copilot"
-    mkdir -p "$COPILOT_PLUGIN_DIR"
-    cp -R "$TEMP_DIR/plugins/maister-copilot/"* "$COPILOT_PLUGIN_DIR/"
-    
-    # Generate required manifest for Copilot (requires .claude-plugin directory)
-    if [ ! -d "$COPILOT_PLUGIN_DIR/.claude-plugin" ]; then
-        mkdir -p "$COPILOT_PLUGIN_DIR/.claude-plugin"
-        echo '{"name": "maister-copilot"}' > "$COPILOT_PLUGIN_DIR/.claude-plugin/plugin.json"
+    # Copy dynamic skills, commands, and agents directly into the real Copilot config folders
+    if [ -d "$TEMP_DIR/plugins/maister-copilot/skills" ]; then
+        cp -R "$TEMP_DIR/plugins/maister-copilot/skills/"* "$COPILOT_TARGET/skills/"
+    fi
+    if [ -d "$TEMP_DIR/plugins/maister-copilot/agents" ]; then
+        cp -R "$TEMP_DIR/plugins/maister-copilot/agents/"* "$COPILOT_TARGET/agents/"
+    fi
+    if [ -d "$TEMP_DIR/plugins/maister-copilot/commands" ]; then
+        cp -R "$TEMP_DIR/plugins/maister-copilot/commands/"* "$COPILOT_TARGET/commands/"
     fi
     
     trap - EXIT
