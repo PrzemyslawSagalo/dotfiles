@@ -11,6 +11,30 @@ COPILOT_DEST_DIR="$HOME/.config/copilot"
 GEMINI_CLI_SKILLS_DIR="$HOME/.gemini/gemini-cli/skills"
 ANTIGRAVITY_CLI_SKILLS_DIR="$HOME/.gemini/antigravity-cli/skills"
 
+function sync_maister_plugins() {
+    echo "Dynamically syncing maister repository..."
+    local TEMP_DIR=$(mktemp -d)
+    
+    # Clone shallow copy of the repository
+    git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
+
+    # Define plugin destination paths
+    local AGY_PLUGIN_DIR="$HOME/.gemini/antigravity-cli/plugins/maister"
+    local COPILOT_PLUGIN_DIR="$HOME/.config/copilot/plugins/maister-copilot"
+
+    # Create destination directories if they don't exist
+    mkdir -p "$AGY_PLUGIN_DIR"
+    mkdir -p "$COPILOT_PLUGIN_DIR"
+
+    # Copy files (overwriting existing ones to update them)
+    cp -R "$TEMP_DIR/plugins/maister/"* "$AGY_PLUGIN_DIR/"
+    cp -R "$TEMP_DIR/plugins/maister-copilot/"* "$COPILOT_PLUGIN_DIR/"
+
+    # Clean up
+    rm -rf "$TEMP_DIR"
+    echo "Maister plugins synced successfully."
+}
+
 # --- 1. Copy the file ---
 # Assumes you are in the same directory as the source .bash_aliases
 echo "Copying $ALIAS_SOURCE_FILE to $ALIAS_DEST_FILE..."
@@ -56,7 +80,10 @@ else
     echo "COPILOT_HOME already set in $BASHRC."
 fi
 
-# --- 4. Apply changes ---
+# --- 4. Sync dynamic plugins ---
+sync_maister_plugins
+
+# --- 5. Apply changes ---
 echo "Reloading shell..."
 source "$BASHRC"
 echo "Done."
