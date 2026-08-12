@@ -7,6 +7,7 @@ BASHRC="$HOME/.bashrc"
 ALIAS_TARGET="$HOME/.bash_aliases"
 COPILOT_TARGET="$HOME/.config/copilot"
 AGY_CONFIG_DIR="$HOME/.gemini/config"
+MAISTER_REPO_DIR="$HOME/.local/share/maister_repo"
 
 link_dotfile() {
     local source_file="$1"
@@ -29,6 +30,18 @@ ensure_in_bashrc() {
     fi
 }
 
+download_maister() {
+    echo "--- Syncing maister repository to host ---"
+    mkdir -p "$(dirname "$MAISTER_REPO_DIR")"
+    
+    # Remove old clone to ensure clean state
+    if [ -d "$MAISTER_REPO_DIR" ]; then
+        rm -rf "$MAISTER_REPO_DIR"
+    fi
+    
+    git clone --depth 1 https://github.com/SkillPanel/maister.git "$MAISTER_REPO_DIR" > /dev/null 2>&1
+}
+
 setup_bash() {
     echo "--- Setting up Bash ---"
     link_dotfile "$DOTFILES_DIR/.bash_aliases" "$ALIAS_TARGET"
@@ -38,10 +51,10 @@ setup_bash() {
 setup_copilot() {
     echo "--- Setting up GitHub Copilot CLI ---"
     
-    # 1. Create real directories to prevent modifying the git repository when we copy dynamic files
+    # Create real directories to hold our symlinks
     mkdir -p "$COPILOT_TARGET/skills" "$COPILOT_TARGET/agents" "$COPILOT_TARGET/commands" "$COPILOT_TARGET/standards"
     
-    # 2. Symlink tracked files from dotfiles individually
+    # Symlink tracked files from dotfiles individually
     [ -f "$DOTFILES_DIR/.config/copilot/copilot-instructions.md" ] && link_dotfile "$DOTFILES_DIR/.config/copilot/copilot-instructions.md" "$COPILOT_TARGET/copilot-instructions.md"
     [ -f "$DOTFILES_DIR/.config/copilot/mcp-config.json" ] && link_dotfile "$DOTFILES_DIR/.config/copilot/mcp-config.json" "$COPILOT_TARGET/mcp-config.json"
     
@@ -59,28 +72,30 @@ setup_copilot() {
         done
     fi
     
-    # 3. Add environment variable to .bashrc
     ensure_in_bashrc "export COPILOT_HOME=\"\$HOME/.config/copilot\"" "GitHub Copilot configuration"
     
-    # 4. Sync external maister-copilot files dynamically
-    echo "Dynamically syncing maister repository for Copilot..."
-    local TEMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TEMP_DIR"' EXIT
-    git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
-    
-    # Copy dynamic skills, commands, and agents directly into the real Copilot config folders
-    if [ -d "$TEMP_DIR/plugins/maister-copilot/skills" ]; then
-        cp -R "$TEMP_DIR/plugins/maister-copilot/skills/"* "$COPILOT_TARGET/skills/"
-    fi
-    if [ -d "$TEMP_DIR/plugins/maister-copilot/agents" ]; then
-        cp -R "$TEMP_DIR/plugins/maister-copilot/agents/"* "$COPILOT_TARGET/agents/"
-    fi
-    if [ -d "$TEMP_DIR/plugins/maister-copilot/commands" ]; then
-        cp -R "$TEMP_DIR/plugins/maister-copilot/commands/"* "$COPILOT_TARGET/commands/"
+    # Symlink dynamic components directly from the host's permanent clone
+    if [ -d "$MAISTER_REPO_DIR/plugins/maister-copilot/skills" ]; then
+        for skill in "$MAISTER_REPO_DIR/plugins/maister-copilot/skills/"*; do
+            [ -e "$skill" ] || continue
+            link_dotfile "$skill" "$COPILOT_TARGET/skills/$(basename "$skill")"
+        done
     fi
     
-    trap - EXIT
-    rm -rf "$TEMP_DIR"
+    if [ -d "$MAISTER_REPO_DIR/plugins/maister-copilot/agents" ]; then
+        for agent in "$MAISTER_REPO_DIR/plugins/maister-copilot/agents/"*; do
+            [ -e "$agent" ] || continue
+            link_dotfile "$agent" "$COPILOT_TARGET/agents/$(basename "$agent")"
+        done
+    fi
+    
+    if [ -d "$MAISTER_REPO_DIR/plugins/maister-copilot/commands" ]; then
+        for cmd in "$MAISTER_REPO_DIR/plugins/maister-copilot/commands/"*; do
+            [ -e "$cmd" ] || continue
+            link_dotfile "$cmd" "$COPILOT_TARGET/commands/$(basename "$cmd")"
+        done
+    fi
+    
     echo "Copilot setup complete."
 }
 
@@ -89,27 +104,22 @@ setup_antigravity() {
     link_dotfile "$DOTFILES_DIR/.config/copilot/skills" "$AGY_CONFIG_DIR/skills"
     link_dotfile "$DOTFILES_DIR/.config/copilot/standards" "$AGY_CONFIG_DIR/standards"
     
-    echo "Dynamically syncing maister repository for Antigravity..."
-    local TEMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TEMP_DIR"' EXIT
-    git clone --depth 1 https://github.com/SkillPanel/maister.git "$TEMP_DIR" > /dev/null 2>&1
-    
     local AGY_PLUGIN_DIR="$AGY_CONFIG_DIR/plugins/maister"
-    mkdir -p "$AGY_PLUGIN_DIR"
-    cp -R "$TEMP_DIR/plugins/maister/"* "$AGY_PLUGIN_DIR/"
+    
+    # Symlink the entire plugin bundle from the permanent clone
+    link_dotfile "$MAISTER_REPO_DIR/plugins/maister" "$AGY_PLUGIN_DIR"
     
     if [ ! -f "$AGY_PLUGIN_DIR/plugin.json" ]; then
         echo '{"name": "maister"}' > "$AGY_PLUGIN_DIR/plugin.json"
     fi
     
-    trap - EXIT
-    rm -rf "$TEMP_DIR"
     echo "Antigravity setup complete."
 }
 
 main() {
     echo "Initializing dotfiles..."
 
+    download_maister
     setup_bash
     setup_copilot
     setup_antigravity
