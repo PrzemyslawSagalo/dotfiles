@@ -38,3 +38,6 @@ copilot() {
 }
 
 alias cop='copilot'
+
+# Google Anty Gravity
+alias agyyolo='agy --dangerously-skip-permissions'
