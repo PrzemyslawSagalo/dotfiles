@@ -15,8 +15,10 @@ readonly REPO_URL="https://github.com/PrzemyslawSagalo/dotfiles.git"
 readonly REPO_BRANCH="main"
 readonly CLONE_DIR="${HOME}/.dotfiles"
 
-echo "-> Cloning dotfiles repository to ${CLONE_DIR}..."
+echo "-> Remove dotfiles folder ${CLONE_DIR}..."
 rm -rf "$CLONE_DIR"
+
+echo "-> Cloning dotfiles repository to ${CLONE_DIR}..."
 git clone --branch "$REPO_BRANCH" "$REPO_URL" "$CLONE_DIR"
 cd "$CLONE_DIR"
 
