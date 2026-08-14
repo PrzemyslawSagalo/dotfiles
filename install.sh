@@ -11,31 +11,15 @@ set -u
 
 export PATH="/usr/bin:/usr/local/bin:$PATH"
 
-# --- Configuration ---
 readonly REPO_URL="https://github.com/PrzemyslawSagalo/dotfiles.git"
 readonly REPO_BRANCH="main"
 readonly CLONE_DIR="${HOME}/.dotfiles"
 
-# --- Installation / Update ---
-if [ -d "$CLONE_DIR" ]; then
-    echo "-> Found existing dotfiles directory in ${CLONE_DIR}."
-    echo "-> Pulling latest changes..."
-    cd "$CLONE_DIR"
-    
-    # This git command is cross-platform
-    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-         echo "Error: ${CLONE_DIR} exists but is not a valid git repository." >&2
-         exit 1
-    fi
-    
-    git pull origin "$REPO_BRANCH"
-else
-    echo "-> Cloning dotfiles repository to ${CLONE_DIR}..."
-    git clone --branch "$REPO_BRANCH" "$REPO_URL" "$CLONE_DIR"
-    cd "$CLONE_DIR"
-fi
+echo "-> Cloning dotfiles repository to ${CLONE_DIR}..."
+rm -rf "$CLONE_DIR"
+git clone --branch "$REPO_BRANCH" "$REPO_URL" "$CLONE_DIR"
+cd "$CLONE_DIR"
 
-# --- Initialization ---
 if [ ! -f "init.sh" ]; then
     echo "Error: 'init.sh' not found in the repository." >&2
     exit 1
